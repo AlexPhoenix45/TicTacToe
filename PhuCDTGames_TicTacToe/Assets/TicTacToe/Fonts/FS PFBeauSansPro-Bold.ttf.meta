@@ -1,0 +1,36 @@
+fileFormatVersion: 2
+guid: 3f459aa07d7025848a0fe3950ad549fc
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - FS PF BeauSans Pro
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: a9ed4f32a18e3734b9cb4b6c2dee45bc, type: 3}
+  - {fileID: 12800000, guid: 69b4758b3a1fdb5429ea696733fdb746, type: 3}
+  - {fileID: 12800000, guid: 87492334f1929164f9c71ceb2fcfcb3d, type: 3}
+  - {fileID: 12800000, guid: e4a58151a38ae9240ae5f8fd97336987, type: 3}
+  - {fileID: 12800000, guid: 4bfb1dbe32ef0ec4ebb29b82e0cc34d1, type: 3}
+  - {fileID: 12800000, guid: 696db81867535884c8261050e9fd0fd5, type: 3}
+  - {fileID: 12800000, guid: 1d82271e17536bd4dae62a4b47d9fb0a, type: 3}
+  - {fileID: 12800000, guid: 6d96779944e8aae469da729d0acb0385, type: 3}
+  - {fileID: 12800000, guid: 3d9550742bcdf204cbce263dd605e777, type: 3}
+  - {fileID: 12800000, guid: be248c2aafb65a149b3bb0cfe3b53f4c, type: 3}
+  - {fileID: 12800000, guid: 07ca219310e1ecd48b7531aa7a75a10e, type: 3}
+  - {fileID: 12800000, guid: 1d46d999c01f7bb44b9ba4dc899c1d82, type: 3}
+  - {fileID: 12800000, guid: 49d0b882888458f4e90395d4e696d65f, type: 3}
+  - {fileID: 12800000, guid: 728c894a4d253cd47bab5e78b8b93f9a, type: 3}
+  - {fileID: 12800000, guid: a530f40712f78554aaba03f53dd2c9fc, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
