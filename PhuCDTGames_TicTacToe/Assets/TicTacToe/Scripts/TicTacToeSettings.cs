@@ -5,16 +5,18 @@ using TMPro;
 
 public class TicTacToeSettings : MonoBehaviour {
 
+    public static TicTacToeSettings Instance;
+
     [SerializeField]
     private TicTacToeController ticTacToeController;
     [SerializeField]
     private RectTransform canvasRect;
     [SerializeField]
-    private TextMeshProUGUI p1WinsText;
+    public TextMeshProUGUI p1WinsText;
     [SerializeField]
     private Toggle p1AiToggle;
     [SerializeField]
-    private TextMeshProUGUI p2WinsText;
+    public TextMeshProUGUI p2WinsText;
     [SerializeField]
     private Toggle p2AiToggle;
     [SerializeField]
@@ -28,8 +30,6 @@ public class TicTacToeSettings : MonoBehaviour {
     [SerializeField]
     private Slider speedSlider;
     [SerializeField]
-    private TextMeshProUGUI gameOverText;
-    [SerializeField]
     private Button startButton;
     [SerializeField]
     private Button hideButton;
@@ -40,17 +40,24 @@ public class TicTacToeSettings : MonoBehaviour {
     //[SerializeField]
     //private float buttonBlinkDuration = 2.3f;
 
-    private int p1Score = 0;
-    private int p2Score = 0;
+    public int p1Score = 0;
+    public int p2Score = 0;
 
     private Coroutine hideSettingsCoroutine = null;
     private Coroutine showSettingsCoroutine = null;
+
+    private bool showEndGame; //This is to fix the EndGame Bugs
 
     private void Start() {
         ticTacToeController.onGameOverDelegate = OnGameOver;
         //StartCoroutine(StartButtonBlinkCoroutine());
         p1AiToggle.isOn = true;
         p2AiToggle.isOn = false;
+
+        if (Instance == null)
+        {
+            Instance = this;
+        }
     }
 
     public void CheckIfAnyAiIsActive() {
@@ -60,12 +67,10 @@ public class TicTacToeSettings : MonoBehaviour {
     public void OnP1AiToggled(bool active) {
         // Debug.Log("OnP1AiToggled " + active);
         ticTacToeController.p1Ai = active;
-        CheckIfAnyAiIsActive();
     }
     public void OnP2AiToggled(bool active) {
         // Debug.Log("OnP2AiToggled " + active);
         ticTacToeController.p2Ai = active;
-        CheckIfAnyAiIsActive();
     }
     public void OnShortcutsToggled(bool active) {
         // Debug.Log("OnShortcutsToggled " + active);
@@ -89,6 +94,8 @@ public class TicTacToeSettings : MonoBehaviour {
         OnHideClicked();
         ticTacToeController.StartGame();
         GameController.Instance.NextRound();
+
+        showEndGame = true;
     }
     public void OnHideClicked() {
         StopAnimationCoroutines();
@@ -167,24 +174,29 @@ public class TicTacToeSettings : MonoBehaviour {
     //}
 
     public void OnGameOver(int win) {
-        // Debug.Log("OnGameOver: " + win);
-        if (win == -1) {
-            gameOverText.text = "Draw at Round " + GameController.Instance.currentRound;
-        } else if (win == 0) {
-            gameOverText.text = "Player 1 Won at Round " + GameController.Instance.currentRound;
-            p1Score++;
-            p1WinsText.text = p1Score.ToString();
-        }
-        else
+        //Debug.Log("OnGameOver: " + win);
+        if (showEndGame)
         {
-            gameOverText.text = "Player 2 Won at Round " + GameController.Instance.currentRound;
-            p2Score++;
-            p2WinsText.text = p2Score.ToString();
+            if (win == -1) {
+               GameController.Instance.SetGameOverText("Draw at Round " + GameController.Instance.currentRound);
+            } else if (win == 0) {
+                GameController.Instance.SetGameOverText("Player X Won at Round " + GameController.Instance.currentRound);
+                p1Score++;
+                p1WinsText.text = p1Score.ToString();
+            }
+            else
+            {
+                GameController.Instance.SetGameOverText("Player O Won at Round " + GameController.Instance.currentRound);
+                p2Score++;
+                p2WinsText.text = p2Score.ToString();
+            }
+            showEndGame = false;
         }
 
         OnShowClicked();
         startButton.interactable = true;
         startButton.gameObject.SetActive(true);
         //StartCoroutine(StartButtonBlinkCoroutine());
+        GameController.Instance.FinalWin();
     }
 }

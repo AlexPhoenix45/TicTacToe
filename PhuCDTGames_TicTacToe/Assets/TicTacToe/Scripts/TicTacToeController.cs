@@ -40,8 +40,29 @@ public class TicTacToeController : MonoBehaviour {
     private int recursionScore;
     private int optimalScoreButtonIndex = -1;
 
+    public int randomTurn;
+
+    private void Start()
+    {
+        foreach (Button button in buttons)
+        {
+            button.interactable = false;
+        }
+    }
+
     public void StartGame() {
-        turn = Mathf.Round(UnityEngine.Random.Range(0, 1)) == 1;
+        //turn = true;
+        randomTurn = UnityEngine.Random.Range(0, 2);
+        if (randomTurn == 0)
+        {
+            turn = false;
+            print("P1 go first as O");
+        }
+        else
+        {
+            print("P2 go first as O");
+            turn = true;
+        }
         Reset();
     }
 
@@ -68,7 +89,14 @@ public class TicTacToeController : MonoBehaviour {
             button.GetComponent<ButtonToUI>().isClear = false;
             return false;
         }
-        text.text = turn ? "X" : "O";
+        if (randomTurn == 0)
+        {
+            text.text = turn ? "X" : "O";
+        }
+        else
+        {
+            text.text = turn ? "O" : "X";
+        }
         fieldsLeft--;
 
         return CheckForWin(text.text, colorate);
@@ -317,7 +345,7 @@ public class TicTacToeController : MonoBehaviour {
 
     // Displays the game results
     private void Win() {
-        Debug.Log(turn ? "Player 1 won!" : "Game Over!");
+        Debug.Log(turn ? "Player 1 won!" : "Player 2 won!");
         isGameOver = true;
         EnableButtons(false);
         onGameOverDelegate?.Invoke(turn ? 0 : 1);
