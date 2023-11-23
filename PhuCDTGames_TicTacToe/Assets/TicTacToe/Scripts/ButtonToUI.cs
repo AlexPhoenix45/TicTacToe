@@ -3,53 +3,56 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ButtonToUI : MonoBehaviour
+namespace GameAdd_TicTacToe
 {
-    Button button;
-    Text text;
-    public GameObject X;
-    public GameObject O;
-
-    public bool isClear;
-
-    void Start()
+    public class ButtonToUI : MonoBehaviour
     {
-        button = GetComponent<Button>();
-        text = GetComponentInChildren<Text>();
-        button.image.color = Color.clear;
-        text.text = "";
-        text.color = Color.clear;
-    }
+        Button button;
+        Text text;
+        public GameObject X;
+        public GameObject O;
 
-    void Update()
-    {
-        if (text.text == "")
+        public bool isClear;
+
+        void Start()
         {
-            isClear = true;
+            button = GetComponent<Button>();
+            text = GetComponentInChildren<Text>();
+            button.image.color = Color.clear;
+            text.text = "";
             text.color = Color.clear;
-            X.SetActive(false);
-            O.SetActive(false);
         }
-        else if (text.text == "O")
+
+        void Update()
         {
-            isClear = false;
-            text.color = Color.clear;
-            O.SetActive(true);
-            X.SetActive(false);
-        }
-        else if (text.text == "X")
-        {
-            isClear = false;
-            text.color = Color.clear;
-            X.SetActive(true);
-            O.SetActive(false);
-        }
-        else
-        {
-            isClear = false;
-            text.color = Color.clear;
-            O.SetActive(false);
-            X.SetActive(false);
+            if (text.text == "")
+            {
+                isClear = true;
+                text.color = Color.clear;
+                X.SetActive(false);
+                O.SetActive(false);
+            }
+            else if (text.text == "O")
+            {
+                isClear = false;
+                text.color = Color.clear;
+                O.SetActive(true);
+                X.SetActive(false);
+            }
+            else if (text.text == "X")
+            {
+                isClear = false;
+                text.color = Color.clear;
+                X.SetActive(true);
+                O.SetActive(false);
+            }
+            else
+            {
+                isClear = false;
+                text.color = Color.clear;
+                O.SetActive(false);
+                X.SetActive(false);
+            }
         }
     }
 }
