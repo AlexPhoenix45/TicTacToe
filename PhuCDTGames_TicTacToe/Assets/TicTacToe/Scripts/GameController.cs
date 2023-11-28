@@ -22,18 +22,26 @@ namespace GameAdd_TicTacToe
 
         public bool dummyAI;
 
-        public TextMeshProUGUI p1Total;
-        public TextMeshProUGUI p2Total;
-        public TextMeshProUGUI whoWin;
-        public GameObject totalScore;
-
         public int p1Score = 0;
         public int p2Score = 0;
+
+        public GameObject finalWin;
 
         public bool isBotPlaying;
 
         public GameObject p1Indicator;
         public GameObject p2Indicator;
+
+        public GameObject roundWin;
+        public GameObject p1Ava;
+        public GameObject p2Ava;
+        public GameObject drawAva;
+        public TextMeshProUGUI roundWinText;
+
+        //Sound Parameter
+        public AudioClip placingAudio;
+        public AudioClip uiPopup;
+        public AudioSource speaker;
 
         private void Start()
         {
@@ -41,6 +49,9 @@ namespace GameAdd_TicTacToe
             {
                 Instance = this;
             }
+            StartMenu.transform.localScale = Vector2.zero;
+            StartMenu.transform.LeanScale(new Vector2(.5f, .5f), 0.5f).setEaseOutBounce();
+            PlayUIPopup();
         }
 
         public void NextRound()
@@ -59,17 +70,64 @@ namespace GameAdd_TicTacToe
             }
         }
 
-        public void SetGameOverText(string text)
+        public void SetGameOverText(string text, int whoWin) // 0 = draw, -1 = p2 (bot), 1 = p1
         {
-            StopAllCoroutines();
-            IEnumerator SetTextTime()
+            PlayUIPopup();
+            roundWin.SetActive(true);
+            roundWin.transform.localScale = Vector2.zero;
+            roundWin.transform.LeanScale(new Vector2(.7f, .7f ), 0.5f).setEaseOutBounce();
+
+            if (whoWin == -1)
             {
-                gameOverText.text = text;
-                yield return new WaitForSeconds(3);
-                gameOverText.text = "";
+                if (isBotPlaying)
+                {
+                    p1Ava.SetActive(false);
+                    p2Ava.SetActive(true);
+                    drawAva.SetActive(false);
+                    roundWinText.text = "Bot Won at Round " + currentRound;
+                }
+                else
+                {
+                    p1Ava.SetActive(false);
+                    p2Ava.SetActive(true);
+                    drawAva.SetActive(false);
+                    roundWinText.text = "Player 2 Won at Round " + currentRound;
+                }
+            }
+            else if (whoWin == 1)
+            {
+                if (isBotPlaying)
+                {
+                    p1Ava.SetActive(true);
+                    p2Ava.SetActive(false);
+                    drawAva.SetActive(false);
+                    roundWinText.text = "Player Won at Round " + currentRound;
+                }
+                else
+                {
+                    p1Ava.SetActive(true);
+                    p2Ava.SetActive(false);
+                    drawAva.SetActive(false);
+                    roundWinText.text = "Player 1 Won at Round " + currentRound;
+                }
+            }
+            else
+            {
+                p1Ava.SetActive(false);
+                p2Ava.SetActive(false);
+                drawAva.SetActive(true);
+                roundWinText.text = "It's a Draw at Round " + currentRound;
             }
 
-            StartCoroutine(SetTextTime());
+            //StopAllCoroutines();
+            //IEnumerator SetTextTime()
+            //{
+            //    gameOverText.text = text;
+            //    yield return new WaitForSeconds(3);
+            //    gameOverText.text = "";
+            //}
+
+            //StartCoroutine(SetTextTime());
             FinalWin();
         }
 
@@ -78,7 +136,15 @@ namespace GameAdd_TicTacToe
             TicTacToeSettings.Instance.OnP1AiToggled(false);
             TicTacToeSettings.Instance.OnP2AiToggled(false);
             isBotPlaying = false;
-            StartMenu.SetActive(false);
+            IEnumerator ClosingPanel()
+
+            {
+                StartMenu.transform.LeanScale(Vector2.zero, 0.5f).setEaseInBack();
+                yield return new WaitForSeconds(0.5f);
+                StartMenu.SetActive(false);
+            }
+
+            StartCoroutine(ClosingPanel());
         }
 
         public void OnClick_PlayerVSComputer()
@@ -86,7 +152,15 @@ namespace GameAdd_TicTacToe
             TicTacToeSettings.Instance.OnP1AiToggled(true);
             TicTacToeSettings.Instance.OnP2AiToggled(false);
             isBotPlaying = true;
-            StartMenu.SetActive(false);
+
+            IEnumerator ClosingPanel()
+            {
+                StartMenu.transform.LeanScale(Vector2.zero, 0.5f).setEaseInBack();
+                yield return new WaitForSeconds(0.5f);
+                StartMenu.SetActive(false);
+            }
+
+            StartCoroutine(ClosingPanel());
         }
 
         public void OnClick_AreYouSure()
@@ -102,30 +176,35 @@ namespace GameAdd_TicTacToe
         public void OnClick_Restart()
         {
             AreYouSure.SetActive(false);
-            TicTacToeSettings.Instance.p1Score = 0;
-            TicTacToeSettings.Instance.p2Score = 0;
+            finalWin.SetActive(false);
+            p1Score = 0;
+            p2Score = 0;
             currentRound = 1;
-            TicTacToeSettings.Instance.p1WinsText.text = TicTacToeSettings.Instance.p1Score.ToString();
-            TicTacToeSettings.Instance.p2WinsText.text = TicTacToeSettings.Instance.p2Score.ToString();
+            TicTacToeSettings.Instance.p1WinsText.text = p1Score.ToString();
+            TicTacToeSettings.Instance.p2WinsText.text = p2Score.ToString();
             currentRoundText.text = "Round " + currentRound;
-            SetGameOverText("");
+            //SetGameOverText("");
+        }
+
+        public void OnClick_CloseRoundPanel()
+        {
+            roundWin.transform.LeanScale(Vector2.zero, 0.5f).setEaseInBack();
+            roundWin.SetActive(false);
         }
 
         public void FinalWin()
         {
-            if (TicTacToeSettings.Instance.p1Score == 5)
+            if (p1Score == 5)
             {
-                totalScore.SetActive(true);
-                p1Total.text = TicTacToeSettings.Instance.p1Score.ToString();
-                p2Total.text = TicTacToeSettings.Instance.p2Score.ToString();
-                whoWin.text = "Player X Win!";
+                finalWin.SetActive(true);
+                print("Player Win");
+                print("Change the Final Win Panel in here");
             }
-            else if (TicTacToeSettings.Instance.p2Score == 5)
+            else if (p2Score == 5)
             {
-                totalScore.SetActive(true);
-                p1Total.text = TicTacToeSettings.Instance.p1Score.ToString();
-                p2Total.text = TicTacToeSettings.Instance.p2Score.ToString();
-                whoWin.text = "Player O Win!";
+                finalWin.SetActive(true);
+                print("Bot Win");
+                print("Change the Final Win Panel in here");
             }
         }
 
@@ -139,8 +218,24 @@ namespace GameAdd_TicTacToe
             //value = false => P1, value = true => p2
             if (value == false)
             {
-
+                p1Indicator.SetActive(true);
+                p2Indicator.SetActive(false);
             }
+            else
+            {
+                p1Indicator.SetActive(false);
+                p2Indicator.SetActive(true);
+            }
+        }
+
+        public void PlayPlacingSound()
+        {
+            speaker.PlayOneShot(placingAudio);
+        }
+
+        public void PlayUIPopup()
+        {
+            speaker.PlayOneShot(uiPopup);
         }
     }
 }

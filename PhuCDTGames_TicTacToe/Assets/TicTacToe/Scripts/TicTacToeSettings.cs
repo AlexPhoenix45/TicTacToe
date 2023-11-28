@@ -180,16 +180,16 @@ namespace GameAdd_TicTacToe
             if (showEndGame)
             {
                 if (win == -1) {
-                   GameController.Instance.SetGameOverText("Draw at Round " + GameController.Instance.currentRound);
+                   GameController.Instance.SetGameOverText("Draw at Round " + GameController.Instance.currentRound, 0);
                 } else if (win == 0) {
                     if (GameController.Instance.isBotPlaying)
                     {
-                        GameController.Instance.SetGameOverText("Bot Won at Round " + GameController.Instance.currentRound);
+                        GameController.Instance.SetGameOverText("Bot Won at Round " + GameController.Instance.currentRound, -1);
                         GameController.Instance.p2Score++;
                     }
                     else
                     {
-                        GameController.Instance.SetGameOverText("Player 2 Won at Round " + GameController.Instance.currentRound);
+                        GameController.Instance.SetGameOverText("Player 2 Won at Round " + GameController.Instance.currentRound, -1);
                         GameController.Instance.p2Score++;
                     }
                     p1WinsText.text = GameController.Instance.p1Score.ToString();
@@ -199,12 +199,12 @@ namespace GameAdd_TicTacToe
                 {
                     if (GameController.Instance.isBotPlaying)
                     {
-                        GameController.Instance.SetGameOverText("Player Won at Round " + GameController.Instance.currentRound);
+                        GameController.Instance.SetGameOverText("Player Won at Round " + GameController.Instance.currentRound, 1);
                         GameController.Instance.p1Score++;
                     }
                     else
                     {
-                        GameController.Instance.SetGameOverText("Player 1 Won at Round " + GameController.Instance.currentRound);
+                        GameController.Instance.SetGameOverText("Player 1 Won at Round " + GameController.Instance.currentRound, 1);
                         GameController.Instance.p1Score++;
                     }
                     p1WinsText.text = GameController.Instance.p1Score.ToString();
@@ -214,8 +214,8 @@ namespace GameAdd_TicTacToe
             }
 
             OnShowClicked();
-            startButton.interactable = true;
-            startButton.gameObject.SetActive(true);
+            //startButton.interactable = true;
+            //startButton.gameObject.SetActive(true);
             //StartCoroutine(StartButtonBlinkCoroutine());
             GameController.Instance.FinalWin();
         }

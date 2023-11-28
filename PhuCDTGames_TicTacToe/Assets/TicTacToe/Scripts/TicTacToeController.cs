@@ -45,6 +45,10 @@ namespace GameAdd_TicTacToe
         public int randomTurn;
         public int randomPiece;
 
+        public List<int> humanMoves = new List<int>(); //Same as P1
+        public List<int> aiMoves = new List<int>(); //Same as P2
+        public bool isUndoing = false;
+
         private void Start()
         {
             foreach (Button button in buttons)
@@ -54,33 +58,20 @@ namespace GameAdd_TicTacToe
         }
 
         public void StartGame() {
+            humanMoves.Clear(); //Reset Lists
+            aiMoves.Clear();
             //turn = true;
             randomTurn = UnityEngine.Random.Range(0, 2);
             randomPiece = UnityEngine.Random.Range(0, 2);
             if (randomTurn == 0) //Player 1
             {
                 turn = false;
-                if (GameController.Instance.isBotPlaying)
-                {
-                    GameController.Instance.SetGameOverText("Player Go First");
-                }
-                else
-                {
-                    GameController.Instance.SetGameOverText("Player 1 Go First");
-                }
             }
             else
             {
-                if (GameController.Instance.isBotPlaying)
-                {
-                    GameController.Instance.SetGameOverText("Bot Go First");
-                }
-                else
-                {
-                    GameController.Instance.SetGameOverText("Player 2 Go First");
-                }
                 turn = true;
             }
+            GameController.Instance.WhoseTurn(turn);
             Reset();
         }
 
@@ -134,8 +125,16 @@ namespace GameAdd_TicTacToe
             return CheckForWin(text.text, colorate);
         }
 
-        public void OnButtonClick(Button button) {
+        public void OnButtonClick(Button button)
+        {
+            //print("Button " +  button.name + "is selected!");
+            if (!isUndoing)
+            {
+                MoveTracer(button);
+            }
+
             button.GetComponent<ButtonToUI>().isClear = false;
+            GameController.Instance.PlayPlacingSound(); //Play Placing Sound
             if (isGameOver) {
                 Reset();
                 return;
@@ -156,9 +155,10 @@ namespace GameAdd_TicTacToe
 
             // Switch turns
             turn = !turn;
+            GameController.Instance.WhoseTurn(turn);
 
             // Let the AI play
-            if (!isGameOver && fieldsLeft > 0 && IsAiTurn()) {
+            if (!isGameOver && fieldsLeft > 0 && IsAiTurn() && !isUndoing) {
                 StartCoroutine(AiTurnCoroutine());
             }
         }
@@ -199,6 +199,7 @@ namespace GameAdd_TicTacToe
             }
             yield return new WaitForSeconds(0.5f);
             EnableButtons(true);
+            print("Bot go " + button.name);
             OnButtonClick(button);
         }
 
@@ -432,6 +433,201 @@ namespace GameAdd_TicTacToe
             turn = false;
             fieldsLeft = 4;
             StartCoroutine(AiTurnCoroutine());
+        }
+
+        private void MoveTracer(Button button)
+        {
+            int ReturnButtonIndex(Button button)
+            {
+                if (button.name == "Slot")
+                {
+                    return 0;
+                }
+                else if (button.name == "Slot (1)")
+                {
+                    return 1;
+                }
+                else if (button.name == "Slot (2)")
+                {
+                    return 2;
+                }
+                else if (button.name == "Slot (3)")
+                {
+                    return 3;
+                }
+                else if (button.name == "Slot (4)")
+                {
+                    return 4;
+                }
+                else if (button.name == "Slot (5)")
+                {
+                    return 5;
+                }
+                else if (button.name == "Slot (6)")
+                {
+                    return 6;
+                }
+                else if (button.name == "Slot (7)")
+                {
+                    return 7;
+                }
+                else if (button.name == "Slot (8)")
+                {
+                    return 8;
+                }
+                else if (button.name == "Slot (9)")
+                {
+                    return 9;
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+
+            if (GameController.Instance.isBotPlaying)
+            {
+                if (IsAiTurn())
+                {
+                    aiMoves.Add(ReturnButtonIndex(button));
+                }
+                else
+                {
+                    humanMoves.Add(ReturnButtonIndex(button));
+                }
+
+                string message = "";
+                foreach (int i in humanMoves)
+                {
+                    message += (i + " ");
+                }
+                print("All Human Moves: " + message);
+
+                message = "";
+                foreach (int i in aiMoves)
+                {
+                    message += (i + " ");
+                }
+                print("All AI Moves: " + message);
+            }
+            else
+            {
+                if (!turn) //if turn = false, that mean player1 turn
+                {
+                    humanMoves.Add(ReturnButtonIndex(button));
+                }
+                else //if turn = true, that mean player2 turn
+                {
+                    aiMoves.Add(ReturnButtonIndex(button));
+                }
+
+                string message = "";
+                foreach (int i in humanMoves)
+                {
+                    message += (i + " ");
+                }
+                print("All P1 Moves: " + message);
+
+                message = "";
+                foreach (int i in aiMoves)
+                {
+                    message += (i + " ");
+                }
+                print("All P2 Moves: " + message);
+            }
+        }
+
+        public void UndoMoves()
+        {
+            if (GameController.Instance.isBotPlaying)
+            {
+                Reset();
+                isUndoing = true;
+                if (randomTurn == 0) //Player 1
+                {
+                    turn = false;
+                    for (int i = 0; i < humanMoves.Count - 1; i++)
+                    {
+                        OnButtonClick(buttons[humanMoves[i]]);
+                        OnButtonClick(buttons[aiMoves[i]]);
+
+                        print(buttons[humanMoves[i]].name);
+                        print(buttons[aiMoves[i]].name);
+                    }
+                    humanMoves.RemoveAt(humanMoves.Count - 1);
+                    aiMoves.RemoveAt(aiMoves.Count - 1);
+                }
+                else //Bot
+                {
+                    turn = true;
+                    for (int i = 0; i < aiMoves.Count - 2; i++)
+                    {
+                        OnButtonClick(buttons[aiMoves[i]]);
+                        OnButtonClick(buttons[humanMoves[i]]);
+
+                        //print(buttons[aiMoves[i]].name);
+                        //print(buttons[humanMoves[i]].name);
+                    }
+                    OnButtonClick(buttons[aiMoves[aiMoves.Count - 2]]);
+
+                    //print(buttons[aiMoves[aiMoves.Count - 2]].name);
+
+                    humanMoves.RemoveAt(humanMoves.Count - 1);
+                    aiMoves.RemoveAt(aiMoves.Count - 1);
+                }
+                //print("done undoing");
+                isUndoing = false;
+            }
+            else
+            {
+                if (turn)
+                {
+                    print("It was P1 turn");
+                    print("After P1 undo:");
+                    print("P1 go first?: " + randomTurn); //0 is P1 go first, 1 is P2 go first
+                    humanMoves.RemoveAt(humanMoves.Count - 1);
+
+                    string message = "";
+                    foreach (int i in humanMoves)
+                    {
+                        message += (i + " ");
+                    }
+                    print("All P1 Moves: " + message);
+
+                    message = "";
+                    foreach (int i in aiMoves)
+                    {
+                        message += (i + " ");
+                    }
+                    print("All P2 Moves: " + message);
+                    turn = !turn; //Switch turn
+                    GameController.Instance.WhoseTurn(turn);
+                }
+                else
+                {
+                    print("It was P2 turn");
+                    print("After P2 undo:");
+                    print("P1 go first?: " + randomTurn); //0 is P1 go first, 1 is P2 go first
+
+                    aiMoves.RemoveAt(aiMoves.Count - 1);
+
+                    string message = "";
+                    foreach (int i in humanMoves)
+                    {
+                        message += (i + " ");
+                    }
+                    print("All P1 Moves: " + message);
+
+                    message = "";
+                    foreach (int i in aiMoves)
+                    {
+                        message += (i + " ");
+                    }
+                    print("All P2 Moves: " + message);
+                    turn = !turn; //Switch turn
+                    GameController.Instance.WhoseTurn(turn);
+                }
+            }
         }
     }
 }
