@@ -171,6 +171,7 @@ namespace GameAdd_TicTacToe
                 StartMenu.transform.LeanScale(Vector2.zero, 0.5f).setEaseInBack();
                 yield return new WaitForSeconds(0.5f);
                 StartMenu.SetActive(false);
+                blurBackground.SetActive(false);
             }
 
             StartCoroutine(ClosingPanel());
