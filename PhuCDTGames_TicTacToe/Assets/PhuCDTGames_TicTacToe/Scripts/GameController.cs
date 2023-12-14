@@ -49,6 +49,10 @@ namespace GameAdd_TicTacToe
         public TextMeshProUGUI finalWinP1Score;
         public TextMeshProUGUI finalWinP2Score;
 
+        //fix player identifical problems\
+        public TextMeshProUGUI p1Name;
+        public TextMeshProUGUI p2Name;
+
         private void Start()
         {
             if (Instance == null)
@@ -155,6 +159,8 @@ namespace GameAdd_TicTacToe
                 yield return new WaitForSeconds(0.5f);
                 StartMenu.SetActive(false);
                 blurBackground.SetActive(false);
+                p1Name.text = "Player 1";
+                p2Name.text = "Player 2";
             }
 
             StartCoroutine(ClosingPanel());
@@ -172,6 +178,8 @@ namespace GameAdd_TicTacToe
                 yield return new WaitForSeconds(0.5f);
                 StartMenu.SetActive(false);
                 blurBackground.SetActive(false);
+                p1Name.text = "Player";
+                p2Name.text = "AI";
             }
 
             StartCoroutine(ClosingPanel());
